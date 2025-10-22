@@ -304,3 +304,238 @@ function mcmaster_customize_register($wp_customize) {
     ));
 }
 add_action('customize_register', 'mcmaster_customize_register');
+
+/**
+ * ============================================
+ * PRODUCT PDF DOWNLOADS FUNCTIONALITY
+ * ============================================
+ */
+
+/**
+ * Add product PDF fields to admin
+ */
+function mcmaster_add_product_pdf_fields() {
+    echo '<div class="options_group">';
+    
+    echo '<p class="form-field">';
+    echo '<strong>' . __('Product PDF Downloads', 'mcmaster-wc-theme') . '</strong>';
+    echo '</p>';
+    
+    // Add PDF upload fields (we'll use multiple file upload)
+    woocommerce_wp_textarea_input(array(
+        'id'          => '_product_pdfs',
+        'label'       => __('PDF Files (JSON format)', 'mcmaster-wc-theme'),
+        'desc_tip'    => true,
+        'description' => __('This field stores PDF file data in JSON format. Use the upload buttons below to manage files.', 'mcmaster-wc-theme'),
+        'rows'        => 3,
+    ));
+    
+    echo '<div id="pdf-upload-section" style="margin: 15px 0;">';
+    echo '<button type="button" class="button upload-pdf-button">' . __('Add PDF File', 'mcmaster-wc-theme') . '</button>';
+    echo '<div id="pdf-files-list" style="margin-top: 15px;"></div>';
+    echo '</div>';
+    
+    // Product Features
+    echo '<p class="form-field">';
+    echo '<strong>' . __('Product Features', 'mcmaster-wc-theme') . '</strong>';
+    echo '</p>';
+    
+    woocommerce_wp_textarea_input(array(
+        'id'          => '_product_features',
+        'label'       => __('Product Features (one per line)', 'mcmaster-wc-theme'),
+        'desc_tip'    => true,
+        'description' => __('Enter product features, one per line. These will be displayed with checkmarks on the product page.', 'mcmaster-wc-theme'),
+        'rows'        => 4,
+        'placeholder' => __("High-quality materials\nFast shipping available\nExpert customer support\nSatisfaction guarantee", 'mcmaster-wc-theme'),
+    ));
+    
+    echo '</div>';
+}
+add_action('woocommerce_product_options_general_product_data', 'mcmaster_add_product_pdf_fields');
+
+/**
+ * Save product PDF data
+ */
+function mcmaster_save_product_pdf_fields($post_id) {
+    // Save PDF data
+    $pdf_data = $_POST['_product_pdfs'] ?? '';
+    
+    if (!empty($pdf_data)) {
+        // Validate JSON data
+        $decoded_data = json_decode($pdf_data, true);
+        if (json_last_error() === JSON_ERROR_NONE) {
+            update_post_meta($post_id, '_product_pdfs', sanitize_textarea_field($pdf_data));
+        }
+    } else {
+        delete_post_meta($post_id, '_product_pdfs');
+    }
+    
+    // Save product features
+    $features_data = $_POST['_product_features'] ?? '';
+    
+    if (!empty($features_data)) {
+        // Convert textarea input to array (one feature per line)
+        $features_lines = explode("\n", $features_data);
+        $features_array = array();
+        
+        foreach ($features_lines as $line) {
+            $feature = trim($line);
+            if (!empty($feature)) {
+                $features_array[] = sanitize_text_field($feature);
+            }
+        }
+        
+        if (!empty($features_array)) {
+            update_post_meta($post_id, '_product_features', $features_array);
+        }
+    } else {
+        delete_post_meta($post_id, '_product_features');
+    }
+}
+add_action('woocommerce_process_product_meta', 'mcmaster_save_product_pdf_fields');
+
+/**
+ * Enqueue admin scripts for PDF management
+ */
+function mcmaster_admin_scripts($hook) {
+    global $post_type;
+    
+    if ($hook === 'post.php' || $hook === 'post-new.php') {
+        if ($post_type === 'product') {
+            wp_enqueue_media();
+            wp_enqueue_script(
+                'mcmaster-product-pdfs',
+                MCMASTER_THEME_URI . '/assets/js/product-pdfs.js',
+                array('jquery'),
+                MCMASTER_THEME_VERSION,
+                true
+            );
+            
+            wp_localize_script('mcmaster-product-pdfs', 'mcmaster_pdf_ajax', array(
+                'ajax_url' => admin_url('admin-ajax.php'),
+                'nonce'    => wp_create_nonce('mcmaster_pdf_nonce'),
+            ));
+        }
+    }
+}
+add_action('admin_enqueue_scripts', 'mcmaster_admin_scripts');
+
+/**
+ * Add PDF Downloads tab to product page
+ */
+function mcmaster_add_pdf_downloads_tab($tabs) {
+    global $product;
+    
+    // Check if product has PDFs
+    $pdf_data = get_post_meta($product->get_id(), '_product_pdfs', true);
+    
+    if (!empty($pdf_data)) {
+        $pdf_files = json_decode($pdf_data, true);
+        
+        if (!empty($pdf_files) && is_array($pdf_files)) {
+            $tabs['pdf_downloads'] = array(
+                'title'    => __('Downloads', 'mcmaster-wc-theme'),
+                'priority' => 25,
+                'callback' => 'mcmaster_pdf_downloads_tab_content',
+            );
+        }
+    }
+    
+    return $tabs;
+}
+add_filter('woocommerce_product_tabs', 'mcmaster_add_pdf_downloads_tab');
+
+/**
+ * PDF Downloads tab content
+ */
+function mcmaster_pdf_downloads_tab_content() {
+    global $product;
+    
+    $pdf_data = get_post_meta($product->get_id(), '_product_pdfs', true);
+    $pdf_files = json_decode($pdf_data, true);
+    
+    if (empty($pdf_files) || !is_array($pdf_files)) {
+        echo '<div class="no-pdfs-message">';
+        echo '<p>' . __('No download files available for this product.', 'mcmaster-wc-theme') . '</p>';
+        echo '</div>';
+        return;
+    }
+    
+    echo '<div class="pdf-downloads-section">';
+    echo '<h3>' . __('Download Files', 'mcmaster-wc-theme') . '</h3>';
+    echo '<p>' . __('Click on any file below to download it to your device.', 'mcmaster-wc-theme') . '</p>';
+    
+    echo '<div class="pdf-downloads-grid">';
+    
+    foreach ($pdf_files as $index => $pdf) {
+        $file_url = wp_get_attachment_url($pdf['id']);
+        $file_name = $pdf['name'];
+        $file_size = $pdf['size'] ?? 'Unknown';
+        
+        if ($file_url) {
+            echo '<div class="pdf-download-item">';
+            echo '<div class="pdf-icon">📄</div>';
+            echo '<h4>' . esc_html($file_name) . '</h4>';
+            echo '<div class="file-info">';
+            echo '<span class="file-size">' . esc_html($file_size) . '</span>';
+            echo '</div>';
+            
+            echo '<a href="' . esc_url($file_url) . '" class="pdf-download-btn" download="' . esc_attr($file_name) . '" target="_blank">';
+            echo '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">';
+            echo '<path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />';
+            echo '</svg>';
+            echo __('Download', 'mcmaster-wc-theme');
+            echo '</a>';
+            echo '</div>';
+        }
+    }
+    
+    echo '</div>';
+    echo '</div>';
+}
+
+/**
+ * AJAX handler for PDF file management
+ */
+function mcmaster_handle_pdf_upload() {
+    check_ajax_referer('mcmaster_pdf_nonce', 'nonce');
+    
+    if (!current_user_can('edit_products')) {
+        wp_die(__('You do not have permission to perform this action.', 'mcmaster-wc-theme'));
+    }
+    
+    $action = $_POST['pdf_action'] ?? '';
+    $response = array('success' => false);
+    
+    switch ($action) {
+        case 'get_files':
+            $product_id = intval($_POST['product_id'] ?? 0);
+            if ($product_id) {
+                $pdf_data = get_post_meta($product_id, '_product_pdfs', true);
+                $pdf_files = json_decode($pdf_data, true);
+                $response['files'] = $pdf_files ?: array();
+                $response['success'] = true;
+            }
+            break;
+            
+        default:
+            $response['message'] = __('Invalid action.', 'mcmaster-wc-theme');
+            break;
+    }
+    
+    wp_send_json($response);
+}
+add_action('wp_ajax_mcmaster_pdf_upload', 'mcmaster_handle_pdf_upload');
+
+/**
+ * Helper function to format file size
+ */
+function mcmaster_format_file_size($bytes, $precision = 2) {
+    $units = array('B', 'KB', 'MB', 'GB', 'TB');
+    
+    for ($i = 0; $bytes > 1024 && $i < count($units) - 1; $i++) {
+        $bytes /= 1024;
+    }
+    
+    return round($bytes, $precision) . ' ' . $units[$i];
+}
