@@ -1,0 +1,258 @@
+/*
+Theme Name: McMaster Navigation Theme
+Description: Custom WordPress theme with McMaster-style navigation system
+Version: 1.0.0
+Author: Your Name
+*/
+
+/* Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    line-height: 1.6;
+    color: #333;
+}
+
+/* Header Styles */
+.site-header {
+    background: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    height: 70px;
+}
+
+.site-logo {
+    font-size: 24px;
+    font-weight: bold;
+    text-decoration: none;
+    color: #333;
+}
+
+/* Navigation Styles */
+.main-navigation {
+    position: relative;
+}
+
+.nav-menu {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-menu > li {
+    position: relative;
+}
+
+.nav-menu a {
+    display: block;
+    padding: 15px 20px;
+    text-decoration: none;
+    color: #333;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.nav-menu a:hover,
+.nav-menu a:focus {
+    background-color: #f5f5f5;
+    color: #007cba;
+}
+
+/* Mega Menu Styles */
+.mega-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: #fff;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    border-top: 3px solid #007cba;
+    min-width: 800px;
+    padding: 30px;
+    display: none;
+    z-index: 999;
+}
+
+.nav-menu li:hover .mega-menu {
+    display: block;
+}
+
+.mega-menu-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 30px;
+}
+
+.mega-menu-column {
+    position: relative;
+}
+
+.mega-menu-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #007cba;
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #007cba;
+}
+
+.mega-menu-items {
+    list-style: none;
+}
+
+.mega-menu-items li {
+    margin-bottom: 8px;
+}
+
+.mega-menu-items a {
+    padding: 5px 0;
+    font-size: 14px;
+    color: #555;
+    border: none;
+    display: block;
+}
+
+.mega-menu-items a:hover {
+    color: #007cba;
+    background: none;
+    padding-left: 10px;
+}
+
+/* Dropdown for regular menu items */
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: #fff;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    min-width: 200px;
+    list-style: none;
+    display: none;
+    z-index: 999;
+}
+
+.menu-item-has-children:hover .dropdown-menu {
+    display: block;
+}
+
+.dropdown-menu a {
+    padding: 12px 20px;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+}
+
+.dropdown-menu a:hover {
+    background-color: #f9f9f9;
+    color: #007cba;
+}
+
+/* Mobile Menu Toggle */
+.mobile-menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 10px;
+}
+
+.mobile-menu-toggle span {
+    display: block;
+    width: 25px;
+    height: 3px;
+    background: #333;
+    margin: 5px 0;
+    transition: 0.3s;
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+    .mobile-menu-toggle {
+        display: block;
+    }
+    
+    .main-navigation {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: #fff;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    
+    .main-navigation.is-open {
+        display: block;
+    }
+    
+    .nav-menu {
+        flex-direction: column;
+    }
+    
+    .nav-menu a {
+        padding: 15px 20px;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .mega-menu,
+    .dropdown-menu {
+        position: static;
+        display: none;
+        box-shadow: none;
+        border-top: none;
+        min-width: auto;
+        padding: 0;
+        background: #f9f9f9;
+    }
+    
+    .menu-item-has-children.is-open .mega-menu,
+    .menu-item-has-children.is-open .dropdown-menu {
+        display: block;
+    }
+    
+    .mega-menu-content {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        padding: 15px;
+    }
+    
+    .mega-menu-title {
+        font-size: 14px;
+        margin-bottom: 10px;
+    }
+    
+    .dropdown-menu a,
+    .mega-menu-items a {
+        padding: 8px 30px;
+        font-size: 13px;
+    }
+}
+
+/* Animation for mobile toggle */
+.mobile-menu-toggle.is-open span:nth-child(1) {
+    transform: rotate(-45deg) translate(-5px, 6px);
+}
+
+.mobile-menu-toggle.is-open span:nth-child(2) {
+    opacity: 0;
+}
+
+.mobile-menu-toggle.is-open span:nth-child(3) {
+    transform: rotate(45deg) translate(-5px, -6px);
+}
