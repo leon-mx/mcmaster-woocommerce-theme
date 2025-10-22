@@ -1,0 +1,251 @@
+/**
+ * Admin Menu CSS for McMaster Navigation
+ */
+
+/* Menu Item Options Styling */
+.mcmaster-menu-options {
+    margin-top: 15px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: #f9f9f9;
+}
+
+.mcmaster-menu-options h4 {
+    margin: 0 0 10px 0;
+    color: #333;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.mcmaster-menu-options .description {
+    color: #666;
+    font-style: italic;
+    margin-bottom: 15px;
+    font-size: 12px;
+}
+
+.mcmaster-menu-options p {
+    margin: 10px 0;
+}
+
+.mcmaster-menu-options label {
+    display: block;
+    font-weight: 500;
+    color: #333;
+}
+
+.mcmaster-menu-options input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+.mcmaster-menu-options input[type="text"],
+.mcmaster-menu-options select,
+.mcmaster-menu-options textarea {
+    margin-top: 5px;
+    width: 100%;
+}
+
+.mcmaster-menu-options textarea {
+    resize: vertical;
+    min-height: 60px;
+}
+
+/* Visual Indicators */
+.menu-item-title.has-mega-menu::after {
+    content: " [Mega]";
+    color: #0073aa;
+    font-weight: bold;
+    font-size: 11px;
+}
+
+.menu-item-title.is-highlighted {
+    background: linear-gradient(135deg, #fff 0%, #fffacd 100%);
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+/* Field Groups */
+.field-mega-menu input {
+    transform: scale(1.1);
+}
+
+.field-menu-columns {
+    background: #e8f4f8;
+    padding: 10px;
+    border-radius: 4px;
+    margin: 10px 0;
+    border-left: 3px solid #0073aa;
+}
+
+.field-menu-icon input {
+    font-family: monospace;
+}
+
+.field-menu-description textarea {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+.field-highlight-menu {
+    background: #fff3cd;
+    padding: 8px;
+    border-radius: 4px;
+    border-left: 3px solid #ffc107;
+}
+
+/* Tooltips */
+.mcmaster-menu-options [title] {
+    cursor: help;
+    position: relative;
+}
+
+/* Loading States */
+.mcmaster-menu-options.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.mcmaster-menu-options.loading::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #ddd;
+    border-top: 2px solid #0073aa;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    transform: translate(-50%, -50%);
+}
+
+@keyframes spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 782px) {
+    .mcmaster-menu-options {
+        padding: 10px;
+    }
+    
+    .mcmaster-menu-options h4 {
+        font-size: 13px;
+    }
+    
+    .field-menu-columns select {
+        font-size: 14px;
+        padding: 8px;
+    }
+}
+
+/* Menu Structure Visualization */
+.menu-item.menu-item-depth-0 .mcmaster-menu-options {
+    border-left: 4px solid #0073aa;
+}
+
+.menu-item.menu-item-depth-1 .mcmaster-menu-options {
+    border-left: 4px solid #00a32a;
+    margin-left: 20px;
+}
+
+.menu-item.menu-item-depth-2 .mcmaster-menu-options {
+    border-left: 4px solid #ff6900;
+    margin-left: 40px;
+}
+
+/* Help Text */
+.mcmaster-help-text {
+    background: #f0f6fc;
+    border: 1px solid #c3e4f7;
+    border-radius: 4px;
+    padding: 12px;
+    margin: 15px 0;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.mcmaster-help-text h5 {
+    margin: 0 0 8px 0;
+    color: #0066cc;
+    font-size: 13px;
+}
+
+.mcmaster-help-text ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.mcmaster-help-text li {
+    margin-bottom: 4px;
+}
+
+/* Error States */
+.mcmaster-menu-options .error {
+    color: #d63638;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+.mcmaster-menu-options input.error,
+.mcmaster-menu-options select.error,
+.mcmaster-menu-options textarea.error {
+    border-color: #d63638;
+    box-shadow: 0 0 0 1px #d63638;
+}
+
+/* Success States */
+.mcmaster-menu-options .success {
+    color: #00a32a;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+/* Advanced Options Toggle */
+.mcmaster-advanced-toggle {
+    background: none;
+    border: none;
+    color: #0073aa;
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 0;
+    margin: 10px 0;
+}
+
+.mcmaster-advanced-toggle:hover {
+    color: #005a87;
+}
+
+.mcmaster-advanced-options {
+    display: none;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #ddd;
+}
+
+.mcmaster-advanced-options.show {
+    display: block;
+}
+
+/* Icon Preview */
+.icon-preview {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background: #f3f3f3;
+    border: 1px solid #ddd;
+    text-align: center;
+    line-height: 18px;
+    margin-left: 8px;
+    border-radius: 3px;
+    font-size: 14px;
+}
+
+.icon-preview.has-icon {
+    background: #e8f4f8;
+    border-color: #0073aa;
+    color: #0073aa;
+}
